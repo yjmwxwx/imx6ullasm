@@ -1,0 +1,72 @@
+ARM GAS  1.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.arch armv7-a
+   3              		.align 2
+   4              		.text
+   5              	_xiangliangbiao:
+   6 0000 18F09FE5 		ldr     pc, = reset 			@Reset_Handler      
+   7 0004 18F09FE5 		ldr     pc, = undefined			@Undefined_Handler     
+   8 0008 18F09FE5 		ldr     pc, = svc			@SVC_Handler           
+   9 000c 18F09FE5 		ldr     pc, = prefabort			@PrefAbort_Handler      
+  10 0010 18F09FE5 		ldr     pc, = dataabort			@DataAbort_Handler     
+  11 0014 00000000 		.word   0                            
+  12 0018 14F09FE5 		ldr     pc, = irq			@IRQ_Handler           
+  13 001c 14F09FE5 		ldr     pc, = fiq			@FIQ_Handler
+  14 0020 3C000000 		.ltorg
+  14      70000000 
+  14      70000000 
+  14      70000000 
+  14      70000000 
+  15              	reset:
+  16              	_gpio5_4kai:	
+  17 003c 30209FE5 		ldr r2, = 0x1fffff	@延时数
+  18 0040 30009FE5 		ldr r0, = 0x20ac000	@GPIO5_DR基地址
+  19 0044 1010A0E3 		mov r1, # 0x10		@io4
+  20 0048 041080E5 		str r1, [r0, # 0x04]	@io4配置为输出
+  21 004c 001080E5 		str r1, [r0]		@io4开
+  22              	_gpio5_4kaiyanshi:		@io4开延时
+  23 0050 012052E2 		subs r2, r2, # 1	@延时数减1
+  24 0054 FDFFFF1A 		bne _gpio5_4kaiyanshi	@没减到0就循环减
+  25 0058 14209FE5 		ldr r2, = 0x1fffff	@延时数
+  26              	_gpio5_4guan:			@io4关
+  27 005c 0010A0E3 		mov r1, # 0		@0关
+  28 0060 001080E5 		str r1, [r0]		@写入GPIO5_DR io关
+  29              	_gpio5_4guanyanshi:		@io4关延时
+  30 0064 012052E2 		subs r2, r2, # 1	@延时数减1
+  31 0068 FDFFFF1A 		bne _gpio5_4guanyanshi	@没减到0就循环减
+  32 006c F2FFFFEA 		b _gpio5_4kai		@跳回IO开
+  33              	undefined:
+  34              	svc:
+  35              	prefabort:
+  36              	dataabort:
+  37              	irq:
+  38              	fiq:
+  39 0070 F1FFFFEA 		b reset
+  40 0074 FFFF1F00 		.end
+  40      00C00A02 
+ARM GAS  1.s 			page 2
+
+
+DEFINED SYMBOLS
+                 1.s:3      .text:0000000000000000 $a
+                 1.s:5      .text:0000000000000000 _xiangliangbiao
+                 1.s:15     .text:000000000000003c reset
+                 1.s:33     .text:0000000000000070 undefined
+                 1.s:34     .text:0000000000000070 svc
+                 1.s:35     .text:0000000000000070 prefabort
+                 1.s:36     .text:0000000000000070 dataabort
+                 1.s:11     .text:0000000000000014 $d
+                 1.s:37     .text:0000000000000070 irq
+                 1.s:12     .text:0000000000000018 $a
+                 1.s:38     .text:0000000000000070 fiq
+                 1.s:14     .text:0000000000000020 $d
+                 1.s:16     .text:000000000000003c _gpio5_4kai
+                 1.s:17     .text:000000000000003c $a
+                 1.s:22     .text:0000000000000050 _gpio5_4kaiyanshi
+                 1.s:26     .text:000000000000005c _gpio5_4guan
+                 1.s:29     .text:0000000000000064 _gpio5_4guanyanshi
+                 1.s:40     .text:0000000000000074 $d
+
+NO UNDEFINED SYMBOLS
