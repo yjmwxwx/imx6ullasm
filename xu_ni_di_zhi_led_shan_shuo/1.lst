@@ -1,0 +1,62 @@
+ARM GAS  1.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.arch armv7-a
+   3              		.align 4
+   4              		.arm
+   5              		.text
+   6 0000 006004E3 		movw r6, # 0x4000
+   7 0004 006048E3 		movt r6, # 0x8000		@ r6 = 0x80004000
+   8 0008 0600A0E1 		mov r0, r6			@ r0 读 r6
+   9 000c FA4FA0E3 		mov r4, # 1000			@ 10K内存 
+  10 0010 0050A0E3 		mov r5, # 0			@ 10K内存写0
+  11              	_nei_cun_qing_ling:			@ 循环写0函数
+  12 0014 045086E4 		str r5, [r6], # 0x04		@ R5= 0 写到R6的地址然后地址加4
+  13 0018 014054E2 		subs r4, r4, # 1		@ 执行一次计数减1
+  14 001c FCFFFF1A 		bne _nei_cun_qing_ling		@ 不等与0循环
+  15 0020 111804E3 		movw r1, # 0x4811 	
+  16 0024 001048E3 		movt r1, # 0x8000		@ r1 = 0x80004811 第一级标识符
+  17 0028 010B80E2 		add r0, r0, # 0x400		@ 0x80004000 加 0x400 = 0x80004400
+  18 002c 001080E5 		str r1, [r0]			@ 第一级标识符写到0x80004400
+  19 0030 53140CE3 		movw r1, # 0xc453
+  20 0034 0A1240E3 		movt r1, # 0x020a		@ r1 = 0x20ac453 第二级标识符
+  21 0038 010B80E2 		add r0, r0, # 0x400		@ 0x80004400 加 0x400 = 0x80004800
+  22 003c 001080E5 		str r1, [r0]			@ 第二级标识符写到0x80004800
+  23 0040 6A0004E3 		movw r0, # 0x406a
+  24 0044 000048E3 		movt r0, # 0x8000		@ r0= 0x8000406a
+  25 0048 100F02EE 		mcr p15, 0, r0, c2, c0, 0	@ r0写到TTBR0
+  26 004c 300F02EE 		mcr p15, 0, r0, c2, c0, 1       @ r0写到TTBR1
+  27 0050 7D0C03E3 		movw r0, # 0x3C7D		
+  28 0054 C50041E3 		movt r0, # 0x10C5		@ r0 = 0x10c53c7d
+  29 0058 100F01EE 		mcr p15, 0, r0, c1, c0, 0	@ 打开MMU
+  30 005c 000000E3 		movw r0, # 0x0000
+  31 0060 000041E3 		movt r0, # 0x1000		@ GPIO5_DR虚拟地址= 0x10000000
+  32              	_led_kai_guan:				@ LED闪烁程序
+  33 0064 1010A0E3 		mov r1, # 0x10			@ IO4
+  34 0068 041080E5 		str r1, [r0, # 0x04]		@ IO4配置为输出
+  35 006c 001080E5 		str r1, [r0]			@ IO4开
+  36 0070 0030A0E3 		mov r3, # 0x00			@ 
+  37 0074 FF2F0FE3 		movw r2, # 0xffff
+  38 0078 FF2340E3 		movt r2, # 0x03ff		@ R2 = 延时数0x3ffffff
+  39              	_led_xun_huan1:				@ IO开延时
+  40 007c 012052E2 		subs r2, r2, # 1		@ R2减1
+  41 0080 FDFFFF1A 		bne _led_xun_huan1		@ 开延时循环
+  42 0084 003080E5 		str r3, [r0]			@ 延时结束关闭IO4
+  43 0088 FF2F0FE3 		movw r2, # 0xffff
+  44 008c FF2340E3 		movt r2, # 0x03ff		@ 延时数重新写入R2
+  45              	_led_xun_huan2:				@ IO关延时
+  46 0090 012052E2 		subs r2, r2, # 1		@ R2减1
+  47 0094 FDFFFF1A 		bne _led_xun_huan2		@ 关延时循环
+  48 0098 F1FFFFEA 		b _led_kai_guan			@ 跳转到LED函数
+ARM GAS  1.s 			page 2
+
+
+DEFINED SYMBOLS
+                 1.s:3      .text:0000000000000000 $a
+                 1.s:11     .text:0000000000000014 _nei_cun_qing_ling
+                 1.s:32     .text:0000000000000064 _led_kai_guan
+                 1.s:39     .text:000000000000007c _led_xun_huan1
+                 1.s:45     .text:0000000000000090 _led_xun_huan2
+
+NO UNDEFINED SYMBOLS

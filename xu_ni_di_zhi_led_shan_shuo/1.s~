@@ -1,0 +1,45 @@
+	.syntax unified
+	.arch armv7-a
+	.align 4
+	.arm
+	.text
+	movw r6, # 0x4000
+	movt r6, # 0x8000
+	mov r0, r6
+	mov r4, # 0xffff
+	mov r5, # 0
+_nei_cun_qing_ling:
+	str r5, [r6], # 0x04
+	subs r4, r4, # 1
+	bne _nei_cun_qing_ling
+	movw r1, # 0x5811 
+	movt r1, # 0x8800
+	add r0, r0, # 0x400
+	str r1, [r0]
+_shi_yan_xun_huan:	
+	movw r0, # 0x406a
+	movt r0, # 0x8000
+	mcr p15, 0, r0, c2, c0, 0
+	mcr p15, 0, r0, c2, c0, 1
+	movw r0, # 0x3C7D
+	movt r0, # 0x10C5
+	mcr p15, 0, r0, c1, c0, 0
+	movw r0, # 0x0000
+	movt r0, # 0x1005
+_led_kai_guan:
+	mov r1, # 0x10
+	str r1, [r0, # 0x04]
+	str r1, [r0]
+	mov r3, # 0x00
+	movw r2, # 0xffff
+	movt r2, # 0x01ff
+_led_xun_huan1:	
+	subs r2, r2, # 1
+	bne _led_xun_huan1
+	str r3, [r0]
+	movw r2, # 0xffff
+	movt r2, # 0x01ff
+_led_xun_huan2:
+	subs r2, r2, # 1
+	bne _led_xun_huan2
+	b _led_kai_guan
